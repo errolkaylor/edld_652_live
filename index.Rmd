@@ -228,7 +228,12 @@ ggplot(aes(y=forcats::fct_reorder(lea_name,el_prof_read),x=el_prof_read, color =
         panel.grid.major = element_blank(),
         axis.text.y = element_text(size = 6),
         axis.text.x = element_text(size = 10)) +
-  labs(y = " ", x = "Percent proficient in reading")
+  labs(title = "Distribution of English learners that scored at or above proficient in Oregon",
+              y = "", 
+              x = "Percentage of English learners that scored at or above proficient",
+              color = "Dual language immersion programs",
+              size="Percent EL of total enrollment")+
+  theme(legend.title = element_text(size = 8))
 ```
 
 ### Graph 2 
@@ -241,7 +246,9 @@ Final %>%
         theme_minimal() +
         labs(title = "Destrict and Achievement", 
              y = "Percent white", 
-             x = "Percent EL of total enrollment")
+             x = "Percent EL of total enrollment") 
+  
+  
 ```
 
 
@@ -296,7 +303,7 @@ or_enroll_total%>%
 
 ### Final Graph 1. 
 
-```{r }
+```{r fig.width=15}
 or_enroll_total%>%
   ggplot(aes(x = el_pct, y=students_color_pct)) +
   geom_point(aes(size = lep_count), color = "grey80") +
@@ -340,7 +347,7 @@ or_enroll_total%>%
 
 ### Graph 2. Candidates for DLI
 
-```{r }
+```{r fig.width=15 }
 or_enroll_total%>%
   ggplot(aes(x = el_pct, y=students_color_pct)) +
   geom_point(aes(size = lep_count), color = "grey80") +
