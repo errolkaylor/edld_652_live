@@ -151,16 +151,22 @@ FinalDF <- left_join(or_enroll_total,ach2,by="leaid") %>%
 Final <- filter(FinalDF,LEP_RLA00PCTPROF!="PS",
                 LEP_RLA00PCTPROF!="GE50",
                 LEP_RLA00PCTPROF!="LT50",
-                LEP_RLA00PCTPROF!="LE20") %>%
+                LEP_RLA00PCTPROF!="LE20")
+
+
+
+
+Df <- Final %>%
   mutate(value1 = as.numeric(str_extract(LEP_RLA00PCTPROF, "\\d+")),
       value2 = abs(as.numeric(str_extract(LEP_RLA00PCTPROF, "\\-\\d+"))),
-      el_prof_read = ifelse(is.na(value2),value1,((value1+value2)/2))) %>%
-  select(leaid,lea_name, white_pct,schools_dli,lep_count,students_color_pct,el_pct,dli_cat,LEP_RLA00PCTPROF,value1,value2,el_prof_read) %>%
-  arrange(el_prof_read)
+      LEP_prof_read = ifelse(is.na(value2),value1,((value1+value2)/2))) %>%
+  select(leaid,lea_name, white_pct,schools_dli,lep_count,students_color_pct,el_pct,dli_cat,LEP_RLA00PCTPROF,value1,value2,LEP_prof_read) %>% 
+  mutate(district_name = gsub("SD.*", "", lea_name)) %>% 
+  mutate(Dli2=case_when(schools_dli == 0 ~ "absence of DLI programs", dli_cat != 0  ~ "presence of DLI programs"))
 
-dli_read <- Final %>%
+dli_read <- Df %>%
   group_by(dli_cat) %>%
-  summarize(mean = mean(el_prof_read))
+  summarize(mean = mean(LEP_prof_read))
 
 
 or_enroll_total_edit <- or_enroll_total %>% 
@@ -175,9 +181,12 @@ full_dataset <- left_join(or_district_el_directory,
                           by="LEAID")
 or_district_data <- school_districts(state=41)
 
-full_dataset %>% 
+p1 <- full_dataset %>% 
   ggplot(aes(student_count,fct_reorder(lea_name,student_count)))+
-  geom_point(aes(size=lep_count))
+  geom_point(aes(size=lep_count))+
+  theme_minimal()+
+  labs(title = "EL Students are not equally distributed across School Districts in Oregon",
+       x= "Number of Total Students")
 ```
 
 ### EL Distribution V1
@@ -191,17 +200,12 @@ first_map <- leaflet(or_district_data) %>%
  addProviderTiles("CartoDB.Positron") %>% 
  addPolygons(color = ~pal(full_dataset$LEP_COUNT),
              weight = 0.5,
-             fillOpacity = 1) 
+             fillOpacity = 1) %>% 
+  addLegend("bottomright", pal = pal, values = ~full_dataset$LEP_COUNT,
+    title = "Distribution of LEP Students Across Oregon",
+    opacity = 1)
 
 first_map
-```
-
-
-
-### Chart C
-
-```{r}
-
 ```
 
 # Reading + Language Arts Achievement
@@ -211,23 +215,27 @@ Column {.tabset}
 -----------------------------------------------------------------------
 ### First Iteration of the graph
 
-```{r }
-Final %>% 
-ggplot(aes(y=forcats::fct_reorder(lea_name,el_prof_read),x=el_prof_read, color = dli_cat)) +
+```{r fig.width=15}
+dli_read <- Df %>%
+  group_by(Dli2) %>%
+  summarize(mean = mean(LEP_prof_read))
+
+Df %>% 
+ggplot(aes(y=forcats::fct_reorder(district_name,LEP_prof_read),x=LEP_prof_read, color = dli_cat)) +
   geom_point(aes(size = el_pct), color = "grey80") +
-  geom_point(data = filter(Final,schools_dli > 0 & !is.na(dli_cat)),
+  geom_point(data = filter(Df,schools_dli > 0 & !is.na(dli_cat)),
              aes(size = el_pct, 
                  color = as.factor(dli_cat)),
                 alpha = .7) + 
   geom_vline(xintercept =42, alpha = .6) +
-  geom_vline(xintercept =41, linetype = "dashed", color = "red", alpha = .6, size = 1.25) +
-  geom_vline(xintercept =44, linetype = "dashed",  color = "green", alpha = .6, size = 1.25) +
+  geom_vline(xintercept =41, linetype = "dashed", color = "#cfcfcf", alpha = .6, size = 1.25) +
+  geom_vline(xintercept =44, linetype = "dashed",  color = "#808080", alpha = .6, size = 1.25) +
   xlim(25,75) +
   theme_minimal() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(),
-        axis.text.y = element_text(size = 6),
-        axis.text.x = element_text(size = 10)) +
+        axis.text.y = element_text(size = 4 ),
+        axis.text.x = element_text(size = 6)) +
   labs(title = "Distribution of English learners that scored at or above proficient in Oregon",
               y = "", 
               x = "Percentage of English learners that scored at or above proficient",
@@ -347,7 +355,7 @@ or_enroll_total%>%
 
 ### Graph 2. Candidates for DLI
 
-```{r fig.width=15 }
+```{r fig.width=15}
 or_enroll_total%>%
   ggplot(aes(x = el_pct, y=students_color_pct)) +
   geom_point(aes(size = lep_count), color = "grey80") +
