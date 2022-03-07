@@ -208,8 +208,6 @@ first_map <- leaflet(or_district_data) %>%
 first_map
 ```
 
-# Reading + Language Arts Achievement
-
 
 Column {.tabset}
 -----------------------------------------------------------------------
