@@ -62,30 +62,7 @@ or_district_el <- as_tibble(get_data("NCES_CCD_nonfiscal_district_2017_2021_engl
 
 or_district_membership <- as_tibble(read_parquet(here( "data", "district-membership-17-21.parquet"))) %>% 
   filter(STATENAME == "OREGON")
-```
 
-
-# Oregon District Data
-
-Background {.sidebar data-width=350}
------------------------------------------------------------------------
-
-The state of Oregon is home to 50,500 students characterized as English Learners across its ~200 districts. These students represent **close to 9%** of reported students in Oregon schools, across all grades. 
-
-Initial Versions of the graph chart EL populations compared to total student population of each district.
-
-Our second visualization plots raw counts of students across Oregon, showing areas of greater density. These counts are not intuitive, and make more sense when displayed relative to the overall number of students. 
-
-Understanding that the relative need for EL student support varies dramatically across Oregon allows for allocating resources to better serve as many students as possible, while acknowledging what more isolated EL students may face.
-
-
-
-Column {.tabset}
------------------------------------------------------------------------
-
-### Chart B
-
-```{r}
 or_district_el_directory <- 
  left_join(or_district_directory,
            or_district_el,
@@ -181,12 +158,39 @@ full_dataset <- left_join(or_district_el_directory,
                            by="LEAID")
 or_district_data <- school_districts(state=41)
 
+```
+
+
+# Oregon District Data
+
+Background {.sidebar data-width=350}
+-----------------------------------------------------------------------
+
+The state of Oregon is home to 50,500 students characterized as English Learners across its ~200 districts. These students represent **close to 9%** of reported students in Oregon schools, across all grades. 
+
+Initial Versions of the graph chart EL populations compared to total student population of each district.
+
+Our second visualization plots raw counts of students across Oregon, showing areas of greater density. These counts are not intuitive, and make more sense when displayed relative to the overall number of students. 
+
+Understanding that the relative need for EL student support varies dramatically across Oregon allows for allocating resources to better serve as many students as possible, while acknowledging what more isolated EL students may face.
+
+
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
 p1 <- full_dataset %>%
-ggplot(aes(student_count,fct_reorder(lea_name,student_count)))+
-geom_point(aes(size=lep_count))+
-theme_minimal()+
-labs(title = "EL Students are not equally distributed across School Districts in Oregon",
-     x= "Number of Total Students")
+  ggplot(aes(student_count,fct_reorder(lea_name,student_count)))+
+  geom_point(aes(size=lep_count))+
+  theme_minimal()+
+  labs(title = "EL Students are not equally distributed across School Districts in Oregon",
+       x= "Number of Total Students")
+
+p1
 ```
 
 ### EL Distribution V1
