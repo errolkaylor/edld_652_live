@@ -215,10 +215,17 @@ first_map
 
 # Set 2 Tingyu
 
+Background {.sidebar data-width=350}
+-----------------------------------------------------------------------
+
+At first, there's not a clear idea if I would focus on the whole state of Oregon or specific subdistricts. Finally, We decide that we'd like a plot which can provide a whole map of the distribution of English learners and their achievement in reading all over the state of Oregon. The y-axis in this plot actually didn't answer our reshearch question well. Besides, the observations of the percentage of English learners scoring at or above proficiency are messy including both numbers and ranges. Obviously, it didn't work because it's neither informative nor neat.
+
+This version looks better because it not only answers our research question well but also looks tidy. This plot displays the distribution of English learners as well as their achievement in reading across the state of Oregon. There is an uneven distribution of Dual language programs in Oregon. Meanwhile, we were curious if Dual language immersion programs make differences in the achievenment of English learners? To answer this question, three v-lines were added in the plot. The differences are explicit as shown in the v-lines, the mean of the percentage of English learners scoring at or above proficiency in Oregon state,subdistrics without Dual language programs and subdistricts with the presence of Dual language programs are 42, 41 and 44, respectively. 
+
 Column {.tabset}
 -----------------------------------------------------------------------
 ### First iteration of the graph: 
-At first, there's not a clear idea if I would focus on the whole state of Oregon or specific subdistricts. Finally, We decide that we'd like a plot which can provide a whole map of the distribution of English learners and their achievement in reading all over the state of Oregon. The y-axis in this plot actually didn't answer our reshearch question well. Besides, the observations of the percentage of English learners scoring at or above proficiency are messy including both numbers and ranges. Obviously, it didn't work because it's neither informative nor neat.
+
 
 ```{r}
 Final %>% 
@@ -234,7 +241,6 @@ Final %>%
 ```
 
 ### Final iteration: 
-This version looks better because it not only answers our research question well but also looks tidy. This plot displays the distribution of English learners as well as their achievement in reading across the state of Oregon. There is an uneven distribution of Dual language programs in Oregon. Meanwhile, we were curious if Dual language immersion programs make differences in the achievenment of English learners? To answer this question, three v-lines were added in the plot. The differences are explicit as shown in the v-lines, the mean of the percentage of English learners scoring at or above proficiency in Oregon state,subdistrics without Dual language programs and subdistricts with the presence of Dual language programs are 42, 41 and 44, respectively. 
 
 ```{r fig.width=12, fig.height = 15}
 dli_read <- Df %>%
