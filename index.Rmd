@@ -16,7 +16,6 @@ knitr::opts_chunk$set(echo = FALSE,
                       warning = FALSE,
                       message = FALSE
                       )
-#library(tmap)
 library(edld652)
 library(tidyverse)
 library(skimr)
@@ -168,9 +167,9 @@ Background {.sidebar data-width=350}
 
 The state of Oregon is home to 50,500 students characterized as English Learners across its ~200 districts. These students represent **close to 9%** of reported students in Oregon schools, across all grades. 
 
-Initial Versions of the graph chart EL populations compared to total student population of each district.
+The first visualization is a scatterplot that emphasizes the relationship of our EL student population compared to total student population of each district. This visualization falls short of providing an intuitive understanding of where our EL students are across the state however.
 
-Our second visualization plots raw counts of students across Oregon, showing areas of greater density. These counts are not intuitive, and make more sense when displayed relative to the overall number of students. 
+Our second visualization plots these counts of students across Oregon, showing areas of greater density. These counts might be less understandable than displaying a ratio of EL students compared to total student population. However, this geographic representation does help confirm our intuition EL student distribution across our state is lopsided, and not just due to total relative population size.
 
 Understanding that the relative need for EL student support varies dramatically across Oregon allows for allocating resources to better serve as many students as possible, while acknowledging what more isolated EL students may face.
 
@@ -179,28 +178,31 @@ Understanding that the relative need for EL student support varies dramatically 
 Column {.tabset}
 -----------------------------------------------------------------------
 
-### Chart B
+### Chart 1 - EL Student Distribution
 
 ```{r}
 
 p1 <- full_dataset %>%
   ggplot(aes(student_count,fct_reorder(lea_name,student_count)))+
-  geom_point(aes(size=lep_count))+
+  geom_point(aes(color=lep_count))+
   theme_minimal()+
   labs(title = "EL Students are not equally distributed across School Districts in Oregon",
-       x= "Number of Total Students")
+       x= "Number of Total Students (Log Scale)",
+       y= "Each Dot is an Oregon School District",
+       color = "Learning English Students")
 
-p1
+p1 + theme(axis.text.y = element_blank())+
+  scale_x_log10()
 ```
 
-### EL Distribution V1
+### EL Distribution Geographically
 
 ```{r}
 pal <- colorNumeric(
  palette = "Blues",
  domain = full_dataset$LEP_COUNT)
 
-first_map <- leaflet(or_district_data) %>%
+final_map <- leaflet(or_district_data) %>%
  addProviderTiles("CartoDB.Positron") %>% 
  addPolygons(color = ~pal(full_dataset$LEP_COUNT),
              weight = 0.5,
@@ -209,11 +211,13 @@ first_map <- leaflet(or_district_data) %>%
     title = "Distribution of LEP Students Across Oregon",
     opacity = 1)
 
-first_map
+final_map
 ```
 
 
-# Set 2 Tingyu
+
+
+# Oregon RLA District Breakdown
 
 Background {.sidebar data-width=350}
 -----------------------------------------------------------------------
@@ -233,7 +237,7 @@ Final %>%
         geom_point(color = "gray70")+
         geom_text_repel(aes(label = LEP_RLA00PCTPROF))+
         theme_minimal() +
-        labs(title = "Destrict and Achievement", 
+        labs(title = "District and Achievement", 
              y = "Percent white", 
              x = "Percent EL of total enrollment") 
   
@@ -263,8 +267,9 @@ ggplot(aes(y=forcats::fct_reorder(district_name,LEP_prof_read),x=LEP_prof_read, 
   theme_minimal() +
   theme(panel.border = element_blank(), 
         panel.grid.major = element_blank(),
-        axis.text.y = element_text(size = 4 ),
-        axis.text.x = element_text(size = 6)) +
+        axis.text.y = element_text(size = 8),
+        axis.text.x = element_text(size = 6),
+        aspect.ratio = 15/10) +
   labs(title = "Distribution of English learners that scored at or above proficient in Oregon",
               y = "", 
               x = "Percentage of English learners that scored at or above proficient",
